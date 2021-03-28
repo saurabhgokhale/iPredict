@@ -1,0 +1,11 @@
+{
+  "id":1000,
+  "title":"Banking banner is missing for specific Collect Information case.",
+  "description":"Expected Results: Banking banner is missing on Agreements Page.  As the bank is in “Collect Info” status.",
+  "discussion":"Steps To Reproduce: 1. Create an Apps provider 2. Create a bank with triggers the PII. (i.e add  “-pending” to the account holder name) 3. Notice the PII Window pops up. 4. Now, Cancel the PopUp window.  5. Notice the Banking Status = “Collect Information”. -  Correct 6. Notice the Agreement page is missing the banner.  -   Incorrect!",
+  "component":"AMP Agreements | All",
+  "State":"Screen",
+  "priority":3,
+  "Assignee":"Saurabh Gokhale",
+  "milestone":"21E"
+}

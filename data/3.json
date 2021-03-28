@@ -1,0 +1,11 @@
+{
+  "id":1006,
+  "title":"Unable to save/submit tax ID changes in iTMS6",
+  "description":"I’m setting up some new test providers in iTMS6, and I’m unable to save tax information so that I can set the paid applications agreement into effect.",
+  "discussion":"Steps To Reproduce:1. Login with legal role to CPID 119456455 Apple Inc - SkywagonUAT 05 in iTMS6. 2. Go to Agreements, Tax and Banking 3. Click on 'Set Up Tax and Contacts' for the paid agreement. 4. Click on Complete US Tax Forms 5. Choose 'subject to backup withholding,'' C Corporate as type of beneficial owner, enter an EIN of 942404110 6. Click the legal checkbox and submit 7. The form processes but then resets without saving changes",
+  "component":"AMP Agreements | All",
+  "State":"Screen",
+  "priority":3,
+  "Assignee":"Saurabh Gokhale",
+  "milestone":"21E"
+}

@@ -1,0 +1,11 @@
+{
+  "id":1005,
+  "title":"Summary:Banking message is Incorrect for the Sanctioned Bank in the agreements details page.",
+  "description":"Summary:Banking message is Incorrect for the Sanctioned Bank in the agreements details page. Associated Bank ( I.e Bank Account 2) is sanctioned but message on the agreements details page shows the below message,  It should be Sanctioned message instead. Bank account 'Bank Account 2' is missing its Account Holder Type. Please edit the bank account and fill in the missing Account Holder Type. Expected Message: The banking information requires an update. Failure to do so may result in delays in payment.See Attached. Vendor : Lorie Line Music",
+  "discussion":"Steps To Reproduce: 1. Create an Apps provider 2. Create a bank with triggers the PII.",
+  "component":"AMP Agreements | All",
+  "State":"Screen",
+  "priority":3,
+  "Assignee":"Saurabh Gokhale",
+  "milestone":"21E"
+}
