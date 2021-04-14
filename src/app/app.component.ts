@@ -11,13 +11,62 @@ import { ElasticsearchService } from './elasticsearch-service';
 export class AppComponent implements OnInit {
   title = 'iPredict';
   uuid = '';
-  returnObj = [];
+  allRadars = [];
+  newRadarsToCheck = [];
+  highValue = [];
+  possibleSolution = [];
   
-
+  /*
+{
+    "radarId":"3452644",
+    "solutions":[{"radarId":"23423",
+                  "matching":"85"}, 
+                  {"radarId":"7345389",
+                  "matching":"40"}]
+}
+  */
   constructor(private es: ElasticsearchService){
-    interval(2000).subscribe(x => {
+    interval(5000).subscribe(x => {
         this.uuid = uuidv4();
+
+        this.es.getAllDocuments('amp','radar')
+        .then(response => {
+          if(!!response.hits && !!response.hits.hits)  {
+            this.allRadars = response.hits.hits.map(function (entry) {
+              return entry._source.search_result_data.id;
+            });
+            //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
+            this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
+            console.log(this.newRadarsToCheck);
+
+            this.newRadarsToCheck.forEach(element => {
+              this.es.moreLikeThisDoc('amp','radar')
+              .then (response => {
+                console.log("moreLikeThisResponse: " + response);
+              })
+            })
+          }
+        });
+
+        /*this.es.moreLikeThisDoc('amp','radar')
+            .then (response => {
+              var index = this.possibleSolution.findIndex(x => x.radarId
+                                                          == response._source.search_result_data.id);
+                 index === -1 ? this.possibleSolution.push({
+                   "radarId":response._source.search_result_data.id,
+                   "solutions":[{"radarId":"23423",
+                  "matching":"85"}],
+                 }) : console.log("no data found");
+            }).error => {
+              console.error(error);
+            }).then(() => {
+              //console.log(this.allRadars);
+            });
+         */   
+
+
         //console.log(this.uuid); 
+        /*
         this.es.getAllSolutions()
         .then(response => {
           console.log(response);
@@ -27,7 +76,7 @@ export class AppComponent implements OnInit {
         }).then(() => {
           console.log('Show Product Completed!');
         });
-        /*
+        
         this.es.getAllProducts('opes', 'phone')
           .then(response => {
             //this.productSources = response.hits.hits;
@@ -42,7 +91,7 @@ export class AppComponent implements OnInit {
       });
  }
   ngOnInit(): void {
-    this.es.getAllProducts('opes', 'phone')
+    /*this.es.getAllProducts('opes', 'phone')
       .then(response => {
         //this.productSources = response.hits.hits;
         this.returnObj = response.hits.hits;
@@ -52,6 +101,7 @@ export class AppComponent implements OnInit {
       }).then(() => {
         console.log('Show Product Completed!');
       });
+      */
   }
 
   getBgColor(val): any {

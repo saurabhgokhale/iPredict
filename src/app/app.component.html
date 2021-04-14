@@ -13,7 +13,7 @@
 
   <div class="row">
     <aside class="col-sm-4">
-      <p>Possible Financial Impact</p>
+      <p>Possible High Value Impact</p>
       <div class="card">
         <article class="card-group-item">
           <header class="card-header">
@@ -52,7 +52,7 @@
               <th>Possible solutions</th>
             </tr>
           </thead>
-            <tr *ngFor="let entry of returnObj">
+            <tr *ngFor="let entry of possibleSolution">
               <td>{{entry.radarId}}</td>
               <td><span *ngFor="let sol of entry.solutions"><a href="{{sol.radarId}}">{{sol.radarId}}</a> [{{sol.matching}}% Matching] </span></td>
             </tr>
