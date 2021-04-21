@@ -54,7 +54,7 @@
           </thead>
             <tr *ngFor="let entry of possibleSolution">
               <td>{{entry.radarId}}</td>
-              <td><span *ngFor="let sol of entry.solutions"><a href="{{sol.radarId}}">{{sol.radarId}}</a> [{{sol.matching}}% Matching] </span></td>
+              <td><span *ngFor="let sol of entry.solutions"><a href="rdar://{{sol.radarId}}">{{sol.radarId}}</a> [{{sol.matching}}% Matching] </span></td>
             </tr>
           </table>
       </div> <!-- card.// -->

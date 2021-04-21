@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { interval } from 'rxjs';
 import { ElasticsearchService } from './elasticsearch-service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,7 @@ export class AppComponent implements OnInit {
   possibleSolution = [];
   
   /*
-{
+{ possible solution example:
     "radarId":"3452644",
     "solutions":[{"radarId":"23423",
                   "matching":"85"}, 
@@ -26,7 +27,7 @@ export class AppComponent implements OnInit {
                   "matching":"40"}]
 }
   */
-  constructor(private es: ElasticsearchService){
+  constructor(private es: ElasticsearchService, private sanitizer: DomSanitizer){
     interval(5000).subscribe(x => {
         this.uuid = uuidv4();
 
@@ -35,16 +36,19 @@ export class AppComponent implements OnInit {
           if(!!response.hits && !!response.hits.hits)  {
             //console.log("##### ID:" + response.hits.hits[0]._id);
             this.allRadars = response.hits.hits.map(function (entry) {
+              return {
+                "radarId":entry._source.search_result_data.id,
+                "_id":entry._id
+              }
               //return entry._source.search_result_data.id;
-              return entry._id;
+              //return entry._id;
             });
             //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
             this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
-            //console.log(this.newRadarsToCheck);
-
+            
             this.newRadarsToCheck.forEach(element => {
               //console.log(element);
-              this.es.moreLikeThisDoc('amp','radar', element)
+              this.es.moreLikeThisDoc('amp','radar', element._id)
               .then (response => {
                 this.allMatch = response.hits.hits.map(function (entry) {
                   return entry;
@@ -53,9 +57,9 @@ export class AppComponent implements OnInit {
                 //console.log(this.allMatch[0]._score);
                 //populate possible
                 var index = this.possibleSolution.findIndex(x => x.radarId
-                                          == element);
+                                          == element.radarId);
                         index === -1 ? this.possibleSolution.push({
-                        "radarId":element,
+                        "radarId":element.radarId,
                         "solutions":[{"radarId":this.allMatch[0].fields["search_result_data.id"][0],
                         "matching":this.allMatch[0]._score}],
                         }) : console.log("no data found");
@@ -105,7 +109,7 @@ export class AppComponent implements OnInit {
             console.log('Show Product Completed!');
           });
           */
-      });
+     });
  }
   ngOnInit(): void {
     /*this.es.getAllProducts('opes', 'phone')
