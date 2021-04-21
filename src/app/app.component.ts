@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   title = 'iPredict';
   uuid = '';
   allRadars = [];
+  allMatch = [];
   newRadarsToCheck = [];
   highValue = [];
   possibleSolution = [];
@@ -32,17 +33,33 @@ export class AppComponent implements OnInit {
         this.es.getAllDocuments('amp','radar')
         .then(response => {
           if(!!response.hits && !!response.hits.hits)  {
+            //console.log("##### ID:" + response.hits.hits[0]._id);
             this.allRadars = response.hits.hits.map(function (entry) {
-              return entry._source.search_result_data.id;
+              //return entry._source.search_result_data.id;
+              return entry._id;
             });
             //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
             this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
-            console.log(this.newRadarsToCheck);
+            //console.log(this.newRadarsToCheck);
 
             this.newRadarsToCheck.forEach(element => {
-              this.es.moreLikeThisDoc('amp','radar')
+              //console.log(element);
+              this.es.moreLikeThisDoc('amp','radar', element)
               .then (response => {
-                console.log("moreLikeThisResponse: " + response);
+                this.allMatch = response.hits.hits.map(function (entry) {
+                  return entry;
+                });
+                //console.log(this.allMatch[0].fields["search_result_data.id"][0]);
+                //console.log(this.allMatch[0]._score);
+                //populate possible
+                var index = this.possibleSolution.findIndex(x => x.radarId
+                                          == element);
+                        index === -1 ? this.possibleSolution.push({
+                        "radarId":element,
+                        "solutions":[{"radarId":this.allMatch[0].fields["search_result_data.id"][0],
+                        "matching":this.allMatch[0]._score}],
+                        }) : console.log("no data found");
+                
               })
             })
           }

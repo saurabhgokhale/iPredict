@@ -34,52 +34,7 @@ export class ElasticsearchService {
     return Promise.resolve(this.financialData);
   }
 
-  private queryalldocs = {
-    '_source': ['search_result_data.id'],
-    'query': {
-      'function_score': {
-        'query': { 'match_all': {} },
-      }
-    }
-  }
-
-  // private queryalldocs = {
-  //   "_source": "false",
-  //   'query': {
-  //     'match_all': {}
-  //   }
-  // };
-
-  /*private queryallproducts = {
-    '_source': ['search_result_data.name','search_result_data.preview_image','search_data.full_text'],
-    'query': {
-      'match_all': {}
-    }
-  };*/
-
-  /*
-  GET /amp/radar/_search
-{
-    "query": {
-        "nested" : {
-            "path" : "search_data",
-            "query": {
-               "more_like_this" : {
-                   "like" :[
-                   {
-                       "_id" : "BJs-engBkIviwsqQiXHk"
-                  }],
-                   "min_term_freq" : 1,
-                   "min_doc_freq":1
-               }
-            }
-        }
-    },
-  "stored_fields": ["search_result_data.id"]
-}
-*/
-
-moreLikeThisDoc(_index, _type): any {
+moreLikeThisDoc(_index, _type, id): any {
   return this.client.search({
     index: _index,
     type: _type,
@@ -92,35 +47,20 @@ moreLikeThisDoc(_index, _type): any {
             'more_like_this' : {
                 'like' :[
                 {
-                    '_id' : 'BJs-engBkIviwsqQiXHk'
+                    '_id' : id
                }],
                 'min_term_freq' : 1,
                 'min_doc_freq':1
             }
          }
-         /* 'query': {
-            'match': {
-              [_field]: _queryText,
-            }
-          }*/
         }
-      }
-    },
-    '_source': []
+      },
+      "stored_fields": ["search_result_data.id"]
+    }
   });
 }
 
-/*
-GET /amp/_search
-{
-    "query":{
-        "match_all": {}
-    },
-    "_source": "false"
-}
-  */
-
-  private queryallproducts = {
+private queryallproducts = {
     '_source': [],
     'query': {
       'function_score': {
@@ -148,12 +88,8 @@ GET /amp/_search
   private connect() {
     this.client = new Client({
       host: 'http://elastic:Apple123@localhost:9200',
-      log: 'trace',
-      //auth: {
-      //  username: 'elastic',
-      //  password: 'MyPassword'
-      //}
-    });
+      log: 'trace'
+   });
   }
 
   isAvailable(): any {
@@ -172,19 +108,20 @@ GET /amp/_search
       index: _index,
       type: _type,
       body: this.queryalldocs,
-      filterPath: ['hits.hits._source']
+      //filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
     });
   }
-/*
-  getAllProducts(_index, _type): any {
-    return this.client.search({
-      index: _index,
-      type: _type,
-      body: this.queryalldocs,
-      filterPath: ['hits.hits._source']
-    });
+
+  private queryalldocs = {
+    //'_source': ['search_result_data.id'],
+    //'stored_fields': ['search_result_data.id'],
+    '_source': [],
+    'query': {
+      'function_score': {
+        'query': { 'match_all': {} },
+      }
+    }
   }
-*/
 
   getAllDocumentsWithScroll(_index, _type, _size): any {
     return this.client.search({
