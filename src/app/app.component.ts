@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   radarName: String = 'radar';
   title = 'iPredict';
   uuid = '';
+  doNotDisplayRadars = ['75391597'];
   allRadars = [];
   allMatch = [];
   newRadarsToCheck = [];
@@ -55,15 +56,24 @@ export class AppComponent implements OnInit {
             //this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
             this.newRadarsToCheck = this.allRadars;
 
+            //if newRadarsToCheck does not have radar that is in possibleSolutions then update the possibleSolutions array
+            /*this.possibleSolution.forEach(function(item, index, object) {
+              if(this.newRadarsToCheck.findIndex(x => x.radarId === item.radarId) < 0) {
+                object.splice(index, 1);
+              }
+            });
+            */
+
             this.newRadarsToCheck.forEach(element => {
               //console.log(element);
               this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
-                
-                if(element.radarId == 75391338) {
-                  console.log("debug");
-                }
 
+                //Demo purposes
+                if(this.doNotDisplayRadars.findIndex(x => x ==element.radarId) >= 0) {
+                  return;
+                }
+                
                 this.allMatch = [];
             
                 response.hits.hits
