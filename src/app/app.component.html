@@ -26,16 +26,25 @@
           </header>
           <div class="filter-content">
             <div class="list-group list-group-flush">
-              <a href="#" class="list-group-item">123423<span
-                  class="float-right badge badge-light round" 
-                  [style.background-color]="getBgColor('Very High')" 
-                  [style.color]="getColor('Very High')">Very High</span> </a>
-              <a href="#" class="list-group-item">4564564<span
-                  class="float-right badge badge-light round">High</span> </a>
+              <div class="list-group-item" *ngFor="let entry of highValue">
+                <a href="#">{{entry.radarId}}<span
+                    class="float-right badge badge-light round" 
+                    [style.background-color]="getBgColor(entry.matchCount)" 
+                    [style.color]="getColor(entry.matchCount)"
+                    [innerHTML]="getTag(entry.matchCount)"></span> </a>
+                </div>
+              <!--<a href="#" class="list-group-item">4564564<span
+                  class="float-right badge badge-light round"
+                  [style.background-color]="getBgColor('High')" 
+                  [style.color]="getColor('High')">High</span> </a>
               <a href="#" class="list-group-item">234565<span
-                  class="float-right badge badge-light round">Low</span> </a>
+                  class="float-right badge badge-light round"
+                  [style.background-color]="getBgColor('Low')" 
+                  [style.color]="getColor('Low')">Low</span> </a>
               <a href="#" class="list-group-item">5656756<span
-                  class="float-right badge badge-light round">High</span> </a>
+                  class="float-right badge badge-light round"
+                  [style.background-color]="getBgColor('High')" 
+                  [style.color]="getColor('High')">High</span> </a>-->
             </div> <!-- list-group .// -->
           </div>
         </article> <!-- card-group-item.// -->

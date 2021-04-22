@@ -10,12 +10,17 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  indexName: String = 'amp';
+  radarName: String = 'radar';
   title = 'iPredict';
   uuid = '';
   allRadars = [];
   allMatch = [];
   newRadarsToCheck = [];
-  highValue = [];
+  highValue = [{"radarId":"75158845", "matchCount":3},
+               {"radarId":"75012545", "matchCount":2},
+               {"radarId":"75255181", "matchCount":1},
+               {"radarId":"75165425", "matchCount":2}];
   possibleSolution = [];
   
   /*
@@ -31,7 +36,7 @@ export class AppComponent implements OnInit {
     interval(5000).subscribe(x => {
         this.uuid = uuidv4();
 
-        this.es.getAllDocuments('amp','radar')
+        this.es.getAllDocuments(this.indexName,this.radarName)
         .then(response => {
           if(!!response.hits && !!response.hits.hits)  {
             //console.log("##### ID:" + response.hits.hits[0]._id);
@@ -48,7 +53,7 @@ export class AppComponent implements OnInit {
             
             this.newRadarsToCheck.forEach(element => {
               //console.log(element);
-              this.es.moreLikeThisDoc('amp','radar', element._id)
+              this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
                 this.allMatch = response.hits.hits.map(function (entry) {
                   return entry;
@@ -125,12 +130,29 @@ export class AppComponent implements OnInit {
       */
   }
 
-  getBgColor(val): any {
-    return 'green';
+  getBgColor(matchCount): any {
+    if(matchCount >= 3)
+      return 'green';
+    if(matchCount >= 2)
+      return 'yellow';
+    
+    return 'light gray'; 
   }
 
-  getColor(val): any {
-    return 'white';
+  getColor(matchCount): any {
+    if(matchCount >= 3)
+      return 'white';
+    
+    return 'black';
+  }
+
+  getTag(matchCount): any {
+    if(matchCount >= 3) 
+      return 'Very High';
+    if(matchCount >= 2) 
+      return 'High';
+    
+      return 'low';
   }
   
 }
