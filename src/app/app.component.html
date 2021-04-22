@@ -33,18 +33,6 @@
                     [style.color]="getColor(entry.matches)"
                     [innerHTML]="getTag(entry.matches)"></span> </a>
                 </div>
-              <!--<a href="#" class="list-group-item">4564564<span
-                  class="float-right badge badge-light round"
-                  [style.background-color]="getBgColor('High')" 
-                  [style.color]="getColor('High')">High</span> </a>
-              <a href="#" class="list-group-item">234565<span
-                  class="float-right badge badge-light round"
-                  [style.background-color]="getBgColor('Low')" 
-                  [style.color]="getColor('Low')">Low</span> </a>
-              <a href="#" class="list-group-item">5656756<span
-                  class="float-right badge badge-light round"
-                  [style.background-color]="getBgColor('High')" 
-                  [style.color]="getColor('High')">High</span> </a>-->
             </div> <!-- list-group .// -->
           </div>
         </article> <!-- card-group-item.// -->
@@ -63,7 +51,15 @@
           </thead>
             <tr *ngFor="let entry of possibleSolution">
               <td>{{entry.radarId}}</td>
-              <td><span *ngFor="let sol of entry.solutions"><a href="rdar://{{sol.radarId}}">{{sol.radarId}}</a> [Match: {{getMatch(sol.matching)}} | Score:{{sol.matching}}] </span></td>
+              <td>
+                <span *ngFor="let sol of entry.solutions">
+                <a href="rdar://{{sol.radarId}}">{{sol.radarId}}</a>
+                 <span
+                    class="badge badge-light round" 
+                    [style.background-color]="getScoreBgColor(sol.matching)" 
+                    [style.color]="getScoreColor(sol.matching)"> {{sol.matching}}% Match</span>
+                </span>
+              </td>
             </tr>
           </table>
       </div> <!-- card.// -->

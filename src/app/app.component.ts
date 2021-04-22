@@ -17,11 +17,12 @@ export class AppComponent implements OnInit {
   allRadars = [];
   allMatch = [];
   newRadarsToCheck = [];
+  possibleSolution = [];
   highValue = [{'radarId':'75158845', 'matches':['75158845','75158846','75158847']},
                {'radarId':'75012545', 'matches':['75012545','75158846']},
                {'radarId':'75255181', 'matches':['75255181']},
                {'radarId':'75165425', 'matches':['75165425','75158846']}];
-  possibleSolution = [];
+  
   
   /*
 { possible solution example:
@@ -34,6 +35,7 @@ export class AppComponent implements OnInit {
   */
   constructor(private es: ElasticsearchService, private sanitizer: DomSanitizer){
     interval(5000).subscribe(x => {
+      
         this.uuid = uuidv4();
 
         this.es.getAllDocuments(this.indexName,this.radarName)
@@ -45,8 +47,6 @@ export class AppComponent implements OnInit {
                 "radarId":entry._source.search_result_data.id,
                 "_id":entry._id
               }
-              //return entry._source.search_result_data.id;
-              //return entry._id;
             });
             //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
             this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
@@ -55,9 +55,18 @@ export class AppComponent implements OnInit {
               //console.log(element);
               this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
-                this.allMatch = response.hits.hits.filter(x => x._score > 50).map(function (entry) {
-                  return entry;
+                this.allMatch = [];
+                response.hits.hits
+                //.filter(x => x._score > 50)
+                .forEach(x => {
+                  var max = Math.ceil(response.hits.max_score / 100) * 100;
+                  console.log("this score: " + x._score * 100 / max);
+                  x._score = (x._score * 100 / max).toFixed(2);
+                  this.allMatch.push(x);
                 });
+                //.map(function (entry) {
+                //  return entry;
+                //});
                 //console.log(this.allMatch[0].fields["search_result_data.id"][0]);
                 //console.log(this.allMatch[0]._score);
                 //populate possible
@@ -161,4 +170,21 @@ export class AppComponent implements OnInit {
    if(score >= 50)
       return 'close'; 
  }  
+
+ getScoreBgColor(match): any {
+  if(match >= 70)
+    return 'green';
+  if(match >= 50)
+    return 'yellow';
+  
+  return 'light gray'; 
+}
+
+getScoreColor(match): any {
+  if(match >= 70)
+    return 'white';
+  
+  return 'black';
+}
+
 }
