@@ -107,6 +107,7 @@ private queryallproducts = {
     return this.client.search({
       index: _index,
       type: _type,
+      size: 50,
       body: this.queryalldocs,
       //filterPath: ['hits.hits._source', 'hits.total', '_scroll_id'],
     });

@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  indexName: String = 'ipredict';
+  indexName: String = 'amp';
   radarName: String = 'radar';
   title = 'iPredict';
   uuid = '';
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
 }
   */
   constructor(private es: ElasticsearchService, private sanitizer: DomSanitizer){
-    interval(5000).subscribe(x => {
+    interval(10000).subscribe(x => {
       
         this.uuid = uuidv4();
 
@@ -48,6 +48,9 @@ export class AppComponent implements OnInit {
                 "_id":entry._id
               }
             });
+
+            //this.possibleSolution = [];
+
             //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
             this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
             
@@ -55,7 +58,9 @@ export class AppComponent implements OnInit {
               //console.log(element);
               this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
+                
                 this.allMatch = [];
+            
                 response.hits.hits
                 //.filter(x => x._score > 50)
                 .forEach(x => {
@@ -70,13 +75,65 @@ export class AppComponent implements OnInit {
                 //console.log(this.allMatch[0].fields["search_result_data.id"][0]);
                 //console.log(this.allMatch[0]._score);
                 //populate possible
-                var index = this.possibleSolution.findIndex(x => x.radarId
+
+
+                var matchObj = {};
+                matchObj['radarId'] = element.radarId;
+                var solutions = [];
+                for(var i = 0; i < this.allMatch.length && i < 3; i++ ) {
+                  if(this.allMatch[i]._score > 40) {
+                    solutions.push(
+                      {
+                        "radarId":this.allMatch[i].fields["search_result_data.id"][i],
+                        "matching":this.allMatch[i]._score
+                      }
+                    );
+                  }
+                }
+                matchObj['solutions'] = solutions; 
+                var add = false;
+                if(matchObj['radarId'] == 75391449) {
+                  console.log('repeat');
+                }
+                var index = this.possibleSolution.findIndex(x => x.radarId==matchObj['radarId']); 
+                if(index == -1) {
+                  add = true;
+                } else {
+                  var existingObj = this.possibleSolution[index];
+                  if(existingObj.solutions.length != matchObj['solutions'].length)
+                    add = true;
+                }
+                if(add && matchObj['solutions'].length > 0)
+                  this.possibleSolution.push(matchObj);
+                else {
+                  console.log('radar exists and no change to radar');
+                }
+                
+                /*var index = this.possibleSolution.findIndex(x => x.radarId
                                           == element.radarId);
-                        index === -1 ? this.possibleSolution.push({
-                        "radarId":element.radarId,
-                        "solutions":[{"radarId":this.allMatch[0].fields["search_result_data.id"][0],
-                        "matching":this.allMatch[0]._score}],
-                        }) : console.log("no data found");
+                if(index === -1) {
+                  for(var i = 0; i < this.allMatch.length && i < 3; i++ ) {
+                      if(this.allMatch[i]._score > 40) {
+                        this.possibleSolution.push({
+                          "radarId":element.radarId,
+                          "solutions":[{"radarId":this.allMatch[i].fields["search_result_data.id"][i],
+                          "matching":this.allMatch[i]._score}],
+                          })  
+                      }
+
+                  }
+
+
+
+                  this.possibleSolution.push({
+                  "radarId":element.radarId,
+                  "solutions":[{"radarId":this.allMatch[0].fields["search_result_data.id"][0],
+                  "matching":this.allMatch[0]._score}],
+                  }) 
+                }
+                else { 
+                  console.log("no data found"); 
+                }*/
                 
               })
             })
