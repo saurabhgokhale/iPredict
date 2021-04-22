@@ -50,19 +50,7 @@ export class AppComponent implements OnInit {
               }
             });
 
-            //this.possibleSolution = [];
-
-            //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
-            //this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
             this.newRadarsToCheck = this.allRadars;
-
-            //if newRadarsToCheck does not have radar that is in possibleSolutions then update the possibleSolutions array
-            /*this.possibleSolution.forEach(function(item, index, object) {
-              if(this.newRadarsToCheck.findIndex(x => x.radarId === item.radarId) < 0) {
-                object.splice(index, 1);
-              }
-            });
-            */
 
             this.newRadarsToCheck.forEach(element => {
               //console.log(element);
@@ -77,26 +65,18 @@ export class AppComponent implements OnInit {
                 this.allMatch = [];
             
                 response.hits.hits
-                //.filter(x => x._score > 50)
                 .forEach(x => {
                   var max = Math.ceil(response.hits.max_score / 100) * 100;
                   console.log("this score: " + x._score * 100 / max);
                   x._score = (x._score * 100 / max).toFixed(2);
                   this.allMatch.push(x);
                 });
-                //.map(function (entry) {
-                //  return entry;
-                //});
-                //console.log(this.allMatch[0].fields["search_result_data.id"][0]);
-                //console.log(this.allMatch[0]._score);
-                //populate possible
-
-
+                
                 var matchObj = {};
                 matchObj['radarId'] = element.radarId;
                 var solutions = [];
                 for(var i = 0; i < this.allMatch.length && i < 3; i++ ) {
-                  if(this.allMatch[i]._score > 40) {
+                  if(this.allMatch[i]._score > 75) {
                     solutions.push(
                       {
                         "radarId":this.allMatch[i].fields["search_result_data.id"],
@@ -116,104 +96,16 @@ export class AppComponent implements OnInit {
                   this.possibleSolution.push(matchObj);
                 } else {
                   var existingObj = this.possibleSolution[index];
-                  //if(existingObj.solutions.length != matchObj['solutions'].length) {
-                  //if(this.notMatching(existingObj.solutions, matchObj['solutions'])) {
-                    this.possibleSolution.splice(index, 1, matchObj);
-                    //add = true;
-                  //}
+                  this.possibleSolution.splice(index, 1, matchObj);
                     
-                }
-                /*if(add && matchObj['solutions'].length > 0)
-                  this.possibleSolution.push(matchObj);
-                else {
-                  console.log('radar exists and no change to radar');
-                }*/
-                
-                /*var index = this.possibleSolution.findIndex(x => x.radarId
-                                          == element.radarId);
-                if(index === -1) {
-                  for(var i = 0; i < this.allMatch.length && i < 3; i++ ) {
-                      if(this.allMatch[i]._score > 40) {
-                        this.possibleSolution.push({
-                          "radarId":element.radarId,
-                          "solutions":[{"radarId":this.allMatch[i].fields["search_result_data.id"][i],
-                          "matching":this.allMatch[i]._score}],
-                          })  
-                      }
-
-                  }
-
-
-
-                  this.possibleSolution.push({
-                  "radarId":element.radarId,
-                  "solutions":[{"radarId":this.allMatch[0].fields["search_result_data.id"][0],
-                  "matching":this.allMatch[0]._score}],
-                  }) 
-                }
-                else { 
-                  console.log("no data found"); 
-                }*/
-                
+                }                
               })
             })
           }
         });
-
-        /*this.es.moreLikeThisDoc('amp','radar')
-            .then (response => {
-              var index = this.possibleSolution.findIndex(x => x.radarId
-                                                          == response._source.search_result_data.id);
-                 index === -1 ? this.possibleSolution.push({
-                   "radarId":response._source.search_result_data.id,
-                   "solutions":[{"radarId":"23423",
-                  "matching":"85"}],
-                 }) : console.log("no data found");
-            }).error => {
-              console.error(error);
-            }).then(() => {
-              //console.log(this.allRadars);
-            });
-         */   
-
-
-        //console.log(this.uuid); 
-        /*
-        this.es.getAllSolutions()
-        .then(response => {
-          console.log(response);
-          this.returnObj = response;
-        }, error => {
-          console.error(error);
-        }).then(() => {
-          console.log('Show Product Completed!');
-        });
-        
-        this.es.getAllProducts('opes', 'phone')
-          .then(response => {
-            //this.productSources = response.hits.hits;
-            this.returnObj = response.hits.hits;
-            console.log(this.returnObj[0]._source.search_data[0].full_text);
-          }, error => {
-            console.error(error);
-          }).then(() => {
-            console.log('Show Product Completed!');
-          });
-          */
      });
  }
   ngOnInit(): void {
-    /*this.es.getAllProducts('opes', 'phone')
-      .then(response => {
-        //this.productSources = response.hits.hits;
-        this.returnObj = response.hits.hits;
-        //console.log(this.returnObj[0]._source.search_data[0].full_text);
-      }, error => {
-        console.error(error);
-      }).then(() => {
-        console.log('Show Product Completed!');
-      });
-      */
   }
 
   getBgColor(matchCount): any {
@@ -240,14 +132,7 @@ export class AppComponent implements OnInit {
     
       return 'low';
   }
-
-  getMatch(score): any {
-   if(score >= 100) 
-      return 'High';
-   if(score >= 50)
-      return 'close'; 
- }  
-
+/*
  getScoreBgColor(match): any {
   if(match >= 70)
     return 'green';
@@ -259,6 +144,23 @@ export class AppComponent implements OnInit {
 
 getScoreColor(match): any {
   if(match >= 70)
+    return 'white';
+  
+  return 'black';
+}
+*/
+
+getScoreBgColor(match): any {
+  if(match >= 90)
+    return 'green';
+  if(match >= 80)
+    return 'yellow';
+  
+  return 'light gray'; 
+}
+
+getScoreColor(match): any {
+  if(match >= 90)
     return 'white';
   
   return 'black';
