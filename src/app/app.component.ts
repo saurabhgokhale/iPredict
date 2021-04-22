@@ -10,17 +10,17 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  indexName: String = 'amp';
+  indexName: String = 'ipredict';
   radarName: String = 'radar';
   title = 'iPredict';
   uuid = '';
   allRadars = [];
   allMatch = [];
   newRadarsToCheck = [];
-  highValue = [{"radarId":"75158845", "matchCount":3},
-               {"radarId":"75012545", "matchCount":2},
-               {"radarId":"75255181", "matchCount":1},
-               {"radarId":"75165425", "matchCount":2}];
+  highValue = [{'radarId':'75158845', 'matches':['75158845','75158846','75158847']},
+               {'radarId':'75012545', 'matches':['75012545','75158846']},
+               {'radarId':'75255181', 'matches':['75255181']},
+               {'radarId':'75165425', 'matches':['75165425','75158846']}];
   possibleSolution = [];
   
   /*
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
               //console.log(element);
               this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
-                this.allMatch = response.hits.hits.map(function (entry) {
+                this.allMatch = response.hits.hits.filter(x => x._score > 50).map(function (entry) {
                   return entry;
                 });
                 //console.log(this.allMatch[0].fields["search_result_data.id"][0]);
@@ -131,28 +131,34 @@ export class AppComponent implements OnInit {
   }
 
   getBgColor(matchCount): any {
-    if(matchCount >= 3)
+    if(matchCount.length >= 3)
       return 'green';
-    if(matchCount >= 2)
+    if(matchCount.length >= 2)
       return 'yellow';
     
     return 'light gray'; 
   }
 
   getColor(matchCount): any {
-    if(matchCount >= 3)
+    if(matchCount.length >= 3)
       return 'white';
     
     return 'black';
   }
 
   getTag(matchCount): any {
-    if(matchCount >= 3) 
+    if(matchCount.length >= 3) 
       return 'Very High';
-    if(matchCount >= 2) 
+    if(matchCount.length >= 2) 
       return 'High';
     
       return 'low';
   }
-  
+
+  getMatch(score): any {
+   if(score >= 100) 
+      return 'High';
+   if(score >= 50)
+      return 'close'; 
+ }  
 }
