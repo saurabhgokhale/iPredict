@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  indexName: String = 'amp';
+  indexName: String = 'ipredict1';
   radarName: String = 'radar';
   title = 'iPredict';
   uuid = '';
@@ -52,13 +52,18 @@ export class AppComponent implements OnInit {
             //this.possibleSolution = [];
 
             //this.allRadars = response.hits.hits.map(entry => entry._source.search_result_data.id);
-            this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
-            
+            //this.newRadarsToCheck = this.allRadars.filter(value => !this.possibleSolution.includes(value));
+            this.newRadarsToCheck = this.allRadars;
+
             this.newRadarsToCheck.forEach(element => {
               //console.log(element);
               this.es.moreLikeThisDoc(this.indexName,this.radarName, element._id)
               .then (response => {
                 
+                if(element.radarId == 75391338) {
+                  console.log("debug");
+                }
+
                 this.allMatch = [];
             
                 response.hits.hits
@@ -84,30 +89,35 @@ export class AppComponent implements OnInit {
                   if(this.allMatch[i]._score > 40) {
                     solutions.push(
                       {
-                        "radarId":this.allMatch[i].fields["search_result_data.id"][i],
+                        "radarId":this.allMatch[i].fields["search_result_data.id"],
                         "matching":this.allMatch[i]._score
                       }
                     );
                   }
                 }
                 matchObj['solutions'] = solutions; 
-                var add = false;
+                //var add = false;
                 if(matchObj['radarId'] == 75391449) {
                   console.log('repeat');
                 }
                 var index = this.possibleSolution.findIndex(x => x.radarId==matchObj['radarId']); 
                 if(index == -1) {
-                  add = true;
+                  //add = true;
+                  this.possibleSolution.push(matchObj);
                 } else {
                   var existingObj = this.possibleSolution[index];
-                  if(existingObj.solutions.length != matchObj['solutions'].length)
-                    add = true;
+                  //if(existingObj.solutions.length != matchObj['solutions'].length) {
+                  //if(this.notMatching(existingObj.solutions, matchObj['solutions'])) {
+                    this.possibleSolution.splice(index, 1, matchObj);
+                    //add = true;
+                  //}
+                    
                 }
-                if(add && matchObj['solutions'].length > 0)
+                /*if(add && matchObj['solutions'].length > 0)
                   this.possibleSolution.push(matchObj);
                 else {
                   console.log('radar exists and no change to radar');
-                }
+                }*/
                 
                 /*var index = this.possibleSolution.findIndex(x => x.radarId
                                           == element.radarId);
@@ -242,6 +252,19 @@ getScoreColor(match): any {
     return 'white';
   
   return 'black';
+}
+
+notMatching(existing, updated): boolean {
+  if(existing.length != updated.length)
+    return true;
+  
+  updated.forEach(ele => {
+    var index = this.possibleSolution.findIndex(x => x.radarId==ele.radarId); 
+    if(index < 0)
+        return true;
+  });
+
+  return false;
 }
 
 }
