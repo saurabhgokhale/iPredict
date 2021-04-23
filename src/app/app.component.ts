@@ -19,10 +19,29 @@ export class AppComponent implements OnInit {
   allMatch = [];
   newRadarsToCheck = [];
   possibleSolution = [];
-  highValue = [{'radarId':'75158845', 'matches':['75158845','75158846','75158847']},
-               {'radarId':'75012545', 'matches':['75012545','75158846']},
-               {'radarId':'75255181', 'matches':['75255181']},
-               {'radarId':'75165425', 'matches':['75165425','75158846']}];
+  highValue = [];
+  //Basic Demo Data Setup
+  
+  /*possibleSolution = [
+    {"radarId": "74758845",
+    "solutions":[
+      {"radarId":"74751245","matching": "91.03"},
+      {"radarId":"73548966","matching": "82.85"},
+      {"radarId":"73665899","matching": "80.42"}
+    ]
+    },
+    {"radarId": "75012545",
+    "solutions":[
+      {"radarId":"75001545","matching": "85.25"},
+      {"radarId":"74052245","matching": "82.21"}
+    ]
+    },
+    {"radarId": "75255181",
+    "solutions":[
+      {"radarId":"73568845","matching": "93.03"}
+    ]
+    }
+  ];*/
   
   
   /*
@@ -41,6 +60,8 @@ export class AppComponent implements OnInit {
 
         this.es.getAllDocuments(this.indexName,this.radarName)
         .then(response => {
+
+          
           if(!!response.hits && !!response.hits.hits)  {
             //console.log("##### ID:" + response.hits.hits[0]._id);
             this.allRadars = response.hits.hits.map(function (entry) {
@@ -50,6 +71,7 @@ export class AppComponent implements OnInit {
               }
             });
 
+            
             this.newRadarsToCheck = this.allRadars;
 
             this.newRadarsToCheck.forEach(element => {
@@ -86,14 +108,41 @@ export class AppComponent implements OnInit {
                   }
                 }
                 matchObj['solutions'] = solutions; 
-                //var add = false;
                 if(matchObj['radarId'] == 75391449) {
                   console.log('repeat');
                 }
                 var index = this.possibleSolution.findIndex(x => x.radarId==matchObj['radarId']); 
                 if(index == -1) {
-                  //add = true;
                   this.possibleSolution.push(matchObj);
+
+                  //Demo purposes
+                  if(matchObj['radarId'] == 75061213) {
+                    this.highValue.push({'radarId':'75158845', 'matches':['75158845','75158846','75158847']});
+                    this.highValue.push({'radarId':'75012545', 'matches':['75012545','75158846']});
+                    this.highValue.push({'radarId':'75255181', 'matches':['75255181']});
+
+                   
+                    var temp1 = {}; temp1['radarId'] = 75158845;
+                    var sol1 = []; 
+                    sol1.push({"radarId":74751245,"matching":91.03});
+                    sol1.push({"radarId":73548966,"matching": 82.85});
+                    sol1.push({"radarId":73665899,"matching": 80.42});
+                    temp1['solutions'] = sol1;
+                    this.possibleSolution.push(temp1);
+
+                    var temp2 = {}; temp2['radarId'] = 75012545;
+                    var sol2 = []; 
+                    sol2.push({"radarId":75001545,"matching":85.25});
+                    sol2.push({"radarId":74052245,"matching": 82.21});
+                    temp2['solutions'] = sol2;
+                    this.possibleSolution.push(temp2);
+
+                    var temp3 = {}; temp3['radarId'] = 75255181;
+                    var sol3 = []; sol3.push({"radarId":"73568845","matching": 93.03});
+                    temp3['solutions'] = sol3;
+                    this.possibleSolution.push(temp3);
+                  }
+
                 } else {
                   var existingObj = this.possibleSolution[index];
                   this.possibleSolution.splice(index, 1, matchObj);
@@ -165,7 +214,7 @@ getScoreColor(match): any {
   
   return 'black';
 }
-
+/*
 notMatching(existing, updated): boolean {
   if(existing.length != updated.length)
     return true;
@@ -178,5 +227,5 @@ notMatching(existing, updated): boolean {
 
   return false;
 }
-
+*/
 }
